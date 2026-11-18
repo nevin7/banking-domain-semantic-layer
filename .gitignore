@@ -1,0 +1,15 @@
+# Dependencies (recreated via `npm install`)
+node_modules/
+
+# macOS & IDE metadata
+.DS_Store
+.idea/
+
+# Logs & environment files
+*.log
+.env
+.env.local
+
+# Temporary ontology verification artifacts
+*_TEMP_*
+catalog-v001.xml

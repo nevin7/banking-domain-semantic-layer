@@ -1,0 +1,140 @@
+@prefix :     <https://ontology.example.org/banking#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+# ════════════════════════════════════════════════════════════
+# ABox — Instance Data
+# Banking Ontology Reasoning Pipeline (minimal scope)
+#
+# Purpose: provide the minimum instance data needed to demonstrate
+# CQ1 (subsumption inference), CQ2 (baseline customer holdings),
+# and CQ3 (baseline glossary term lookup — no new individuals needed,
+# answered directly from banking_domain.ttl's class annotations).
+#
+# Companion file: banking_domain.ttl (TBox — unchanged)
+# All data below is synthetic. No real customer data.
+# ════════════════════════════════════════════════════════════
+
+<https://ontology.example.org/banking-instances>
+    a owl:Ontology ;
+    rdfs:label "Banking Domain Ontology — Instance Data" ;
+    rdfs:comment "Synthetic ABox data supporting the banking ontology reasoning pipeline portfolio project. Loaded alongside banking_domain.ttl." ;
+    owl:imports <https://ontology.example.org/banking> .
+
+
+# ── Regulatory Frameworks (CQ1) ──
+
+:fwAML
+    a :AntiMoneyLaundering ;
+    rdfs:label "Anti-Money Laundering (AML)" .
+
+:fwKYC
+    a :KnowYourCustomer ;
+    rdfs:label "Know Your Customer (KYC)" .
+
+:fwCDD
+    a :CustomerDueDiligence ;
+    rdfs:label "Customer Due Diligence (CDD)" .
+
+
+# ── Customers ──
+# None are asserted as :SecuredBorrower — CQ2 must infer that.
+
+:cust001
+    a :RetailCustomer ;
+    rdfs:label "Customer 001 (synthetic) — Retail" .
+
+:cust002
+    a :BusinessCustomer ;
+    rdfs:label "Customer 002 (synthetic) — Commercial" .
+
+:cust003
+    a :RetailCustomer ;
+    rdfs:label "Customer 003 (synthetic) — Unsecured Retail" .
+
+
+# ── Deposit Accounts (CQ1, CQ3) ──
+# Typed ONLY at their most specific class so subsumption (CQ3) is inferred.
+
+:acct001
+    a :PersonalChecking ;
+    rdfs:label "Account 001 (synthetic) — Personal Checking" ;
+    :accountNumber "CHK-1001" ;
+    :governedBy :fwAML, :fwKYC .
+
+:acct002
+    a :SavingsAccount ;
+    rdfs:label "Account 002 (synthetic) — Savings" ;
+    :accountNumber "SAV-1002" ;
+    :governedBy :fwKYC .
+
+:acct003
+    a :BusinessChecking ;
+    rdfs:label "Account 003 (synthetic) — Business Checking" ;
+    :accountNumber "BCHK-2001" ;
+    :governedBy :fwAML, :fwCDD .
+
+
+# ── Collateral (CQ2) ──
+
+:collat001
+    a :Collateral ;
+    rdfs:label "123 Oak Street Residential Property (synthetic)" .
+
+:collat002
+    a :Collateral ;
+    rdfs:label "Commercial Equipment Lien — CNC Fleet (synthetic)" .
+
+
+# ── Loan Accounts (CQ1, CQ2, CQ4) ──
+# None are asserted as :NonPerformingLoan — CQ4 must infer that from :Delinquent90Plus.
+
+:acct004
+    a :FixedRateMortgage ;
+    rdfs:label "Account 004 (synthetic) — 30Y Fixed Mortgage" ;
+    :accountNumber "MTG-4001" ;
+    :outstandingBalance "285000.00"^^xsd:decimal ;
+    :interestRate "6.50"^^xsd:decimal ;
+    :daysDelinquent 0 ;
+    :hasPerformanceStatus :Current ;
+    :isSecuredBy :collat001 ;
+    :governedBy :fwKYC .
+
+:acct005
+    a :TermLoan ;
+    rdfs:label "Account 005 (synthetic) — Commercial Term Loan" ;
+    :accountNumber "TL-5001" ;
+    :outstandingBalance "142500.00"^^xsd:decimal ;
+    :interestRate "7.75"^^xsd:decimal ;
+    :daysDelinquent 105 ;
+    :hasPerformanceStatus :Delinquent90Plus ;
+    :isSecuredBy :collat002 ;
+    :governedBy :fwAML, :fwCDD .
+
+:acct006
+    a :CreditCard ;
+    rdfs:label "Account 006 (synthetic) — Consumer Credit Card" ;
+    :accountNumber "CC-6001" ;
+    :outstandingBalance "4200.00"^^xsd:decimal ;
+    :interestRate "19.99"^^xsd:decimal ;
+    :daysDelinquent 45 ;
+    :hasPerformanceStatus :Delinquent30To89 ;
+    :governedBy :fwKYC .
+
+
+# ── Account Holdings (CQ1, CQ2, CQ4) ──
+# :isSubjectTo is NEVER asserted — inferred by holdsAccount o governedBy.
+
+:cust001 :holdsAccount :acct001, :acct002, :acct004 .
+:acct001 :isHeldBy :cust001 .
+:acct002 :isHeldBy :cust001 .
+:acct004 :isHeldBy :cust001 .
+
+:cust002 :holdsAccount :acct003, :acct005 .
+:acct003 :isHeldBy :cust002 .
+:acct005 :isHeldBy :cust002 .
+
+:cust003 :holdsAccount :acct006 .
+:acct006 :isHeldBy :cust003 .

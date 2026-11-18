@@ -1,0 +1,1537 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+# ── FIBO namespace references (for alignment annotations) ──
+@prefix fibo-fbc-pas-fpas: <https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/> .
+@prefix fibo-fbc-dae-dbt:  <https://spec.edmcouncil.org/fibo/ontology/FBC/DebtAndEquities/Debt/> .
+@prefix fibo-be-le-lp:     <https://spec.edmcouncil.org/fibo/ontology/BE/LegalEntities/LegalPersons/> .
+@prefix fibo-be-ge-ge:     <https://spec.edmcouncil.org/fibo/ontology/BE/GovernmentEntities/GovernmentEntities/> .
+@prefix fibo-loan-ln-ln:   <https://spec.edmcouncil.org/fibo/ontology/LOAN/LoansGeneral/Loans/> .
+@prefix fibo-loan-re-re:   <https://spec.edmcouncil.org/fibo/ontology/LOAN/RealEstateLoans/RealEstateLoans/> .
+@prefix fibo-fbc-pas-caa:  <https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/ClientsAndAccounts/> .
+@prefix fibo-sec-sec-acct: <https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesAccounts/> .
+@prefix fibo-be-tr-tr:     <https://spec.edmcouncil.org/fibo/ontology/BE/Trusts/Trusts/> .
+@prefix fibo-be-oac-opty:  <https://spec.edmcouncil.org/fibo/ontology/BE/OwnershipAndControl/OwnershipParties/> .
+@prefix fibo-fbc-fct-ra:   <https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/> .
+@prefix cmns-pts:          <https://www.omg.org/spec/Commons/PartiesAndSituations/> .
+@prefix cmns-av:           <https://www.omg.org/spec/Commons/AnnotationVocabulary/> .
+
+# ── Local ontology namespace ──
+@prefix bank: <https://ontology.example.org/banking#> .
+@prefix :     <https://ontology.example.org/banking#> .
+
+
+# ════════════════════════════════════════════════════════════
+# ONTOLOGY DECLARATION
+# ════════════════════════════════════════════════════════════
+
+<https://ontology.example.org/banking>
+    a owl:Ontology ;
+    dcterms:title "Banking Domain Ontology" ;
+    dcterms:description """An OWL ontology representing core concepts of the commercial banking domain,
+    including customers and parties, accounts, transactions, credit and risk, regulatory compliance,
+    financial metrics, and data governance. Aligned to the Financial Industry Business Ontology (FIBO)
+    where applicable. Developed as a portfolio artifact demonstrating semantic modeling for AI enablement.""" ;
+    dcterms:creator "Nevin Kohler" ;
+    dcterms:created "2025-01-01"^^xsd:date ;
+    dcterms:subject "Banking, Financial Services, Knowledge Representation, AI Enablement" ;
+    owl:versionInfo "1.0" ;
+    rdfs:comment "Namespaces prefixed fibo-* are reference alignments to FIBO. This ontology does not import FIBO directly but documents alignment for interoperability." .
+
+
+# ════════════════════════════════════════════════════════════
+# ANNOTATION PROPERTIES
+# ════════════════════════════════════════════════════════════
+
+:fiboAlignment
+    a owl:AnnotationProperty ;
+    rdfs:label "FIBO Alignment" ;
+    rdfs:comment "The FIBO class or property to which this concept is aligned." ;
+    rdfs:subPropertyOf rdfs:seeAlso .
+
+:aiCanonicalDefinition
+    a owl:AnnotationProperty ;
+    rdfs:label "AI Canonical Definition" ;
+    rdfs:comment "A tightly scoped, unambiguous definition written for consumption by language models and AI systems." ;
+    rdfs:subPropertyOf skos:definition .
+
+:usageConstraint
+    a owl:AnnotationProperty ;
+    rdfs:label "Usage Constraint" ;
+    rdfs:comment "Regulatory, privacy, or operational constraints on how this concept's data may be used." .
+
+:termOwner
+    a owl:AnnotationProperty ;
+    rdfs:label "Term Owner" ;
+    rdfs:comment "The business unit or role accountable for this concept definition." .
+
+:dataAssetMapping
+    a owl:AnnotationProperty ;
+    rdfs:label "Data Asset Mapping" ;
+    rdfs:comment "The database tables, schemas, or data assets where instances of this concept are stored." .
+
+:status
+    a owl:AnnotationProperty ;
+    rdfs:label "Status" ;
+    rdfs:comment "Governance status of this concept: Approved, Candidate, Deprecated, or Under Review." .
+
+
+# ════════════════════════════════════════════════════════════
+# DOMAIN: CUSTOMERS & PARTIES
+# ════════════════════════════════════════════════════════════
+
+:Party
+    a owl:Class ;
+    rdfs:label "Party" ;
+    skos:prefLabel "Party" ;
+    skos:definition "Any entity — natural person or legal entity — that has or may have a relationship with the bank." ;
+    skos:scopeNote "Top-level class for all participants in banking relationships." ;
+    :fiboAlignment "cmns-pts:Party" ;
+    :aiCanonicalDefinition "A person or legal entity that participates in a banking relationship, either as a customer, counterparty, guarantor, or other role." ;
+    :termOwner "Enterprise Data Office" ;
+    :status "Approved" .
+
+:Individual
+    a owl:Class ;
+    rdfs:subClassOf :Party ;
+    rdfs:label "Individual" ;
+    skos:prefLabel "Individual" ;
+    skos:altLabel "Natural Person" ;
+    skos:definition "A human being who has legal capacity to enter into financial contracts." ;
+    :fiboAlignment "fibo-be-le-lp:NaturalPerson" ;
+    :termOwner "Retail Banking" ;
+    :status "Approved" .
+
+:LegalEntity
+    a owl:Class ;
+    rdfs:subClassOf :Party ;
+    rdfs:label "Legal Entity" ;
+    skos:prefLabel "Legal Entity" ;
+    skos:altLabel "Business Entity" ;
+    skos:definition "An organization recognized by law as having rights and obligations distinct from its owners." ;
+    :fiboAlignment "fibo-be-le-lp:LegalEntity" ;
+    :termOwner "Commercial Banking" ;
+    :status "Approved" .
+
+:Customer
+    a owl:Class ;
+    rdfs:subClassOf :Party ;
+    rdfs:label "Customer" ;
+    skos:prefLabel "Customer" ;
+    skos:definition "A party that holds or has applied for one or more bank products or services." ;
+    :fiboAlignment "fibo-fbc-pas-fpas:Customer" ;
+    :aiCanonicalDefinition "A party with an active or pending contractual relationship with the bank involving at least one financial product." ;
+    :usageConstraint "PII — customer identity data protected under GLBA and applicable state privacy laws." ;
+    :dataAssetMapping "CUSTOMER_MASTER, CIF" ;
+    :termOwner "Enterprise Data Office" ;
+    :status "Approved" .
+
+:IndividualCustomer
+    a owl:Class ;
+    rdfs:subClassOf :Customer, :Individual ;
+    rdfs:label "Individual Customer" ;
+    skos:prefLabel "Individual Customer" ;
+    skos:altLabel "Consumer", "Personal Customer" ;
+    skos:definition "A natural person who holds or has applied for a bank product or service." ;
+    skos:scopeNote "Excludes business entities. Used in retail and consumer lending contexts." ;
+    :fiboAlignment "fibo-fbc-pas-fpas:Customer (individual context)" ;
+    :dataAssetMapping "CUSTOMER_MASTER, CIF" ;
+    :termOwner "Retail Banking" ;
+    :status "Approved" .
+
+:RetailCustomer
+    a owl:Class ;
+    rdfs:subClassOf :IndividualCustomer ;
+    rdfs:label "Retail Customer" ;
+    skos:prefLabel "Retail Customer" ;
+    skos:altLabel "Consumer Banking Customer" ;
+    skos:definition "An individual using standard consumer banking products such as checking, savings, or personal loans." ;
+    skos:scopeNote "Distinct from private banking clients by asset threshold. Typically below $1M in investable assets." ;
+    :termOwner "Retail Banking" ;
+    :status "Approved" .
+
+:PrivateBankingClient
+    a owl:Class ;
+    rdfs:subClassOf :IndividualCustomer ;
+    rdfs:label "Private Banking Client" ;
+    skos:prefLabel "Private Banking Client" ;
+    skos:altLabel "High Net Worth Client" ;
+    skos:definition "A high-net-worth individual receiving personalized wealth management and banking services." ;
+    skos:scopeNote "Typically defined by investable assets exceeding $1M. Threshold varies by institution." ;
+    :usageConstraint "Sensitive — requires relationship manager approval before data sharing." ;
+    :dataAssetMapping "WEALTH_CLIENT, AUM" ;
+    :termOwner "Wealth Management" ;
+    :status "Approved" .
+
+:BusinessCustomer
+    a owl:Class ;
+    rdfs:subClassOf :Customer, :LegalEntity ;
+    rdfs:label "Business Customer" ;
+    skos:prefLabel "Business Customer" ;
+    skos:altLabel "Commercial Customer" ;
+    skos:definition "A legal entity that maintains a banking relationship with the bank." ;
+    :fiboAlignment "fibo-be-le-lp:LegalEntity + fibo-fbc-pas-fpas:Customer" ;
+    :usageConstraint "Entity data — EIN and ownership structure are sensitive." ;
+    :dataAssetMapping "BUSINESS_CUSTOMER, ENTITY_MASTER" ;
+    :termOwner "Commercial Banking" ;
+    :status "Approved" .
+
+:SmallBusiness
+    a owl:Class ;
+    rdfs:subClassOf :BusinessCustomer ;
+    rdfs:label "Small Business" ;
+    skos:prefLabel "Small Business" ;
+    skos:definition "A business customer with annual revenues typically below $10M." ;
+    skos:scopeNote "Revenue threshold may vary by institution. Often served by branch-based relationship managers." ;
+    :termOwner "Small Business Banking" ;
+    :status "Approved" .
+
+:MiddleMarketCompany
+    a owl:Class ;
+    rdfs:subClassOf :BusinessCustomer ;
+    rdfs:label "Middle Market Company" ;
+    skos:prefLabel "Middle Market Company" ;
+    skos:altLabel "Mid-Market Client" ;
+    skos:definition "A business customer with annual revenues typically between $10M and $1B." ;
+    :termOwner "Commercial Banking" ;
+    :status "Approved" .
+
+:LargeCorporate
+    a owl:Class ;
+    rdfs:subClassOf :BusinessCustomer ;
+    rdfs:label "Large Corporate" ;
+    skos:prefLabel "Large Corporate" ;
+    skos:altLabel "Corporate Client" ;
+    skos:definition "A corporation with revenues exceeding $1B, typically requiring investment banking services." ;
+    :usageConstraint "Highly confidential — NDA and restricted access may apply." ;
+    :termOwner "Corporate Banking" ;
+    :status "Approved" .
+
+:GovernmentEntity
+    a owl:Class ;
+    rdfs:subClassOf :BusinessCustomer ;
+    rdfs:label "Government Entity" ;
+    skos:prefLabel "Government Entity" ;
+    skos:altLabel "Public Sector Client" ;
+    skos:definition "A federal, state, or local government body or agency that maintains a banking relationship." ;
+    :fiboAlignment "fibo-be-ge-ge:GovernmentalEntity" ;
+    :termOwner "Public Sector Banking" ;
+    :status "Approved" .
+
+:Counterparty
+    a owl:Class ;
+    rdfs:subClassOf :Party ;
+    rdfs:label "Counterparty" ;
+    skos:prefLabel "Counterparty" ;
+    skos:definition "The opposing entity in a financial transaction, particularly in capital markets and derivatives." ;
+    skos:scopeNote "Counterparty risk refers to the possibility the opposing party defaults on its obligations." ;
+    :fiboAlignment "fibo-fbc-fi-fi:Counterparty" ;
+    :aiCanonicalDefinition "An entity with a legally binding obligation on the opposite side of a financial transaction from the bank." ;
+    :dataAssetMapping "COUNTERPARTY, TRADE" ;
+    :termOwner "Risk Management" ;
+    :status "Approved" .
+
+:Guarantor
+    a owl:Class ;
+    rdfs:subClassOf :Party ;
+    rdfs:label "Guarantor" ;
+    skos:prefLabel "Guarantor" ;
+    skos:altLabel "Co-signer" ;
+    skos:definition "A party who agrees to be responsible for a borrower's debt if the borrower defaults." ;
+    skos:scopeNote "A guarantor is not the primary obligor but assumes liability upon default." ;
+    :fiboAlignment "fibo-loan-ln-ln:Guarantor" ;
+    :usageConstraint "PII — personal guarantee agreements are sensitive legal documents." ;
+    :dataAssetMapping "GUARANTOR, OBLIGOR" ;
+    :termOwner "Credit Risk" ;
+    :status "Approved" .
+
+:BeneficialOwner
+    a owl:Class ;
+    rdfs:subClassOf :Individual ;
+    rdfs:label "Beneficial Owner" ;
+    skos:prefLabel "Beneficial Owner" ;
+    skos:altLabel "Ultimate Beneficial Owner" ;
+    skos:definition "A natural person who ultimately owns or controls a legal entity customer." ;
+    skos:scopeNote "FinCEN requires identification of beneficial owners with 25% or greater ownership stake." ;
+    :fiboAlignment "fibo-be-oac-opty:BeneficialOwner" ;
+    :usageConstraint "Regulatory — mandatory collection and verification required under FinCEN CDD Rule." ;
+    :dataAssetMapping "BENEFICIAL_OWNER, KYC" ;
+    :termOwner "BSA / AML Compliance" ;
+    :status "Approved" .
+
+:PoliticallyExposedPerson
+    a owl:Class ;
+    rdfs:subClassOf :Individual ;
+    rdfs:label "Politically Exposed Person" ;
+    skos:prefLabel "Politically Exposed Person" ;
+    skos:altLabel "PEP" ;
+    skos:definition "An individual who holds or has held a prominent public function, requiring enhanced due diligence." ;
+    skos:scopeNote "Includes foreign and domestic government officials, senior executives of state-owned enterprises, and their family members." ;
+    :aiCanonicalDefinition "An individual classified as higher risk due to current or former significant public office, requiring enhanced monitoring and documentation." ;
+    :usageConstraint "Annual review required — PEP status can change." ;
+    :dataAssetMapping "PEP_REGISTRY, EDD_FILE" ;
+    :termOwner "Financial Crimes" ;
+    :status "Approved" .
+
+
+# ════════════════════════════════════════════════════════════
+# DOMAIN: ACCOUNTS
+# ════════════════════════════════════════════════════════════
+
+:Account
+    a owl:Class ;
+    rdfs:label "Account" ;
+    skos:prefLabel "Account" ;
+    skos:definition "A formal contractual relationship between the bank and a customer associated with a specific financial product." ;
+    :fiboAlignment "fibo-fbc-pas-caa:Account" ;
+    :aiCanonicalDefinition "A uniquely identified record representing a customer's relationship with a specific bank product, including its current state and transaction history." ;
+    :dataAssetMapping "ACCOUNT, PRODUCT_INSTANCE" ;
+    :termOwner "Enterprise Data Office" ;
+    :status "Approved" .
+
+:DepositAccount
+    a owl:Class ;
+    rdfs:subClassOf :Account ;
+    rdfs:label "Deposit Account" ;
+    skos:prefLabel "Deposit Account" ;
+    skos:altLabel "Depository Account" ;
+    skos:definition "An account in which a customer places funds with the bank for safekeeping and access." ;
+    skos:scopeNote "Deposits are liabilities on the bank's balance sheet. FDIC-insured up to $250,000." ;
+    :fiboAlignment "fibo-fbc-dae-dbt:DepositAccount" ;
+    :usageConstraint "FDIC insurance limits must be reflected accurately in customer-facing communications." ;
+    :dataAssetMapping "DEPOSIT_ACCOUNT, BALANCE" ;
+    :termOwner "Retail Banking" ;
+    :status "Approved" .
+
+:DemandDepositAccount
+    a owl:Class ;
+    rdfs:subClassOf :DepositAccount ;
+    rdfs:label "Demand Deposit Account" ;
+    skos:prefLabel "Demand Deposit Account" ;
+    skos:altLabel "Checking Account", "DDA" ;
+    skos:definition "A transactional deposit account from which funds may be withdrawn on demand, used for everyday spending and bill payment." ;
+    :fiboAlignment "fibo-fbc-dae-dbt:DemandDepositAccount" ;
+    :aiCanonicalDefinition "A bank account providing unrestricted, on-demand access to deposited funds via debit card, check, ACH, and wire." ;
+    :dataAssetMapping "DDA, TRANSACTION" ;
+    :termOwner "Retail Banking" ;
+    :status "Approved" .
+
+:PersonalChecking
+    a owl:Class ;
+    rdfs:subClassOf :DemandDepositAccount ;
+    rdfs:label "Personal Checking" ;
+    skos:prefLabel "Personal Checking" ;
+    skos:altLabel "Consumer Checking" ;
+    skos:definition "A demand deposit account held by an individual consumer for personal financial transactions." ;
+    :usageConstraint "PII — account data subject to GLBA." ;
+    :dataAssetMapping "DDA — ACCT_TYPE = 'PERS_CHK'" ;
+    :termOwner "Retail Banking" ;
+    :status "Approved" .
+
+:BusinessChecking
+    a owl:Class ;
+    rdfs:subClassOf :DemandDepositAccount ;
+    rdfs:label "Business Checking" ;
+    skos:prefLabel "Business Checking" ;
+    skos:altLabel "Commercial DDA" ;
+    skos:definition "A demand deposit account held by a business entity for commercial financial transactions." ;
+    :dataAssetMapping "DDA — ACCT_TYPE = 'BUS_CHK'" ;
+    :termOwner "Commercial Banking" ;
+    :status "Approved" .
+
+:SavingsAccount
+    a owl:Class ;
+    rdfs:subClassOf :DepositAccount ;
+    rdfs:label "Savings Account" ;
+    skos:prefLabel "Savings Account" ;
+    skos:definition "An interest-bearing deposit account intended for accumulating funds over time." ;
+    :fiboAlignment "fibo-fbc-dae-dbt:SavingsAccount" ;
+    :dataAssetMapping "SAVINGS_ACCOUNT, APY" ;
+    :termOwner "Retail Banking" ;
+    :status "Approved" .
+
+:MoneyMarketAccount
+    a owl:Class ;
+    rdfs:subClassOf :SavingsAccount ;
+    rdfs:label "Money Market Account" ;
+    skos:prefLabel "Money Market Account" ;
+    skos:altLabel "MMA" ;
+    skos:definition "A savings account with limited check-writing privileges and tiered interest rates." ;
+    skos:scopeNote "FDIC-insured unlike money market mutual funds. Higher balances typically earn higher rates." ;
+    :fiboAlignment "fibo-fbc-dae-dbt:MoneyMarketAccount" ;
+    :dataAssetMapping "SAVINGS_ACCOUNT — ACCT_TYPE = 'MMA'" ;
+    :termOwner "Retail Banking" ;
+    :status "Approved" .
+
+:TimeDeposit
+    a owl:Class ;
+    rdfs:subClassOf :DepositAccount ;
+    rdfs:label "Time Deposit" ;
+    skos:prefLabel "Time Deposit" ;
+    skos:altLabel "Certificate of Deposit", "CD" ;
+    skos:definition "A deposit instrument earning a fixed interest rate for a specified term, with early withdrawal penalties." ;
+    :fiboAlignment "fibo-fbc-dae-dbt:TimeDeposit" ;
+    :dataAssetMapping "CD_ACCOUNT, MATURITY_DATE" ;
+    :termOwner "Retail Banking" ;
+    :status "Approved" .
+
+:LoanAccount
+    a owl:Class ;
+    rdfs:subClassOf :Account ;
+    rdfs:label "Loan Account" ;
+    skos:prefLabel "Loan Account" ;
+    skos:altLabel "Credit Account" ;
+    skos:definition "An account representing funds extended by the bank to a customer with an obligation to repay." ;
+    skos:scopeNote "Loans are assets on the bank's balance sheet." ;
+    :fiboAlignment "fibo-loan-ln-ln:Loan" ;
+    :aiCanonicalDefinition "A bank account representing a credit obligation, including outstanding principal balance, interest rate, payment schedule, and collateral if applicable." ;
+    :usageConstraint "Consumer loan data subject to FCRA protections." ;
+    :dataAssetMapping "LOAN_ACCOUNT, ORIGINATION" ;
+    :termOwner "Credit" ;
+    :status "Approved" .
+
+:Mortgage
+    a owl:Class ;
+    rdfs:subClassOf :LoanAccount ;
+    rdfs:label "Mortgage" ;
+    skos:prefLabel "Mortgage" ;
+    skos:altLabel "Home Loan", "Real Estate Loan" ;
+    skos:definition "A long-term loan secured by real property, used to finance the purchase or refinancing of real estate." ;
+    skos:scopeNote "Subject to RESPA, TILA, and HMDA reporting requirements." ;
+    :fiboAlignment "fibo-loan-re-re:MortgageLoan" ;
+    :usageConstraint "HMDA reportable — race, ethnicity, and income data collected at origination." ;
+    :dataAssetMapping "MORTGAGE_ACCOUNT, PROPERTY" ;
+    :termOwner "Mortgage Banking" ;
+    :status "Approved" .
+
+:FixedRateMortgage
+    a owl:Class ;
+    rdfs:subClassOf :Mortgage ;
+    rdfs:label "Fixed-Rate Mortgage" ;
+    skos:prefLabel "Fixed-Rate Mortgage" ;
+    skos:altLabel "FRM" ;
+    skos:definition "A mortgage with an interest rate that remains constant for the entire loan term." ;
+    :fiboAlignment "fibo-loan-re-re:FixedRateMortgage" ;
+    :dataAssetMapping "MORTGAGE — RATE_TYPE = 'FIXED'" ;
+    :termOwner "Mortgage Banking" ;
+    :status "Approved" .
+
+:AdjustableRateMortgage
+    a owl:Class ;
+    rdfs:subClassOf :Mortgage ;
+    rdfs:label "Adjustable-Rate Mortgage" ;
+    skos:prefLabel "Adjustable-Rate Mortgage" ;
+    skos:altLabel "ARM", "Variable-Rate Mortgage" ;
+    skos:definition "A mortgage with an interest rate that adjusts periodically based on a benchmark index, subject to rate caps." ;
+    :fiboAlignment "fibo-loan-re-re:AdjustableRateMortgage" ;
+    :usageConstraint "Rate reset dates and caps must be disclosed per Regulation Z." ;
+    :dataAssetMapping "MORTGAGE — RATE_TYPE = 'ARM'" ;
+    :termOwner "Mortgage Banking" ;
+    :status "Approved" .
+
+:HomeEquityLineOfCredit
+    a owl:Class ;
+    rdfs:subClassOf :Mortgage ;
+    rdfs:label "Home Equity Line of Credit" ;
+    skos:prefLabel "Home Equity Line of Credit" ;
+    skos:altLabel "HELOC" ;
+    skos:definition "A revolving credit line secured by the equity in the borrower's home, drawn as needed during a defined draw period." ;
+    :fiboAlignment "fibo-loan-re-re:HomeEquityLineOfCredit" ;
+    :usageConstraint "Real property lien — title search and appraisal required before funding." ;
+    :dataAssetMapping "HELOC_ACCOUNT, DRAW_HISTORY" ;
+    :termOwner "Consumer Lending" ;
+    :status "Approved" .
+
+:CommercialLoan
+    a owl:Class ;
+    rdfs:subClassOf :LoanAccount ;
+    rdfs:label "Commercial Loan" ;
+    skos:prefLabel "Commercial Loan" ;
+    skos:altLabel "Business Loan", "C&I Loan" ;
+    skos:definition "A loan extended to a business entity for operating or investment purposes." ;
+    :fiboAlignment "fibo-loan-ln-ln:CommercialLoan" ;
+    :usageConstraint "Entity verification and beneficial ownership required at origination." ;
+    :dataAssetMapping "COMMERCIAL_LOAN, OBLIGOR" ;
+    :termOwner "Commercial Banking" ;
+    :status "Approved" .
+
+:RevolvingCreditFacility
+    a owl:Class ;
+    rdfs:subClassOf :CommercialLoan ;
+    rdfs:label "Revolving Credit Facility" ;
+    skos:prefLabel "Revolving Credit Facility" ;
+    skos:altLabel "Revolver", "Line of Credit" ;
+    skos:definition "A flexible credit line allowing a business to borrow, repay, and re-borrow up to an approved limit." ;
+    skos:scopeNote "Interest accrues only on drawn amounts. May be committed or uncommitted." ;
+    :fiboAlignment "fibo-fbc-dae-dbt:RevolvingCreditFacility" ;
+    :usageConstraint "Covenant compliance must be monitored and documented throughout the life of the facility." ;
+    :dataAssetMapping "REVOLVER_ACCOUNT, UTILIZATION" ;
+    :termOwner "Commercial Banking" ;
+    :status "Approved" .
+
+:TermLoan
+    a owl:Class ;
+    rdfs:subClassOf :CommercialLoan ;
+    rdfs:label "Term Loan" ;
+    skos:prefLabel "Term Loan" ;
+    skos:definition "A business loan repaid over a fixed schedule with a defined maturity date." ;
+    :fiboAlignment "fibo-loan-ln-ln:TermLoan" ;
+    :dataAssetMapping "TERM_LOAN, AMORTIZATION" ;
+    :termOwner "Commercial Banking" ;
+    :status "Approved" .
+
+:CommercialRealEstateLoan
+    a owl:Class ;
+    rdfs:subClassOf :CommercialLoan ;
+    rdfs:label "Commercial Real Estate Loan" ;
+    skos:prefLabel "Commercial Real Estate Loan" ;
+    skos:altLabel "CRE Loan" ;
+    skos:definition "A loan secured by income-producing commercial property, underwritten based on property cash flow and loan-to-value." ;
+    :fiboAlignment "fibo-loan-re-re:CommercialMortgage" ;
+    :usageConstraint "CRE concentration limits apply — regulatory reporting required." ;
+    :dataAssetMapping "CRE_LOAN, PROPERTY_COLLATERAL" ;
+    :termOwner "CRE Lending" ;
+    :status "Approved" .
+
+:CreditCard
+    a owl:Class ;
+    rdfs:subClassOf :LoanAccount ;
+    rdfs:label "Credit Card" ;
+    skos:prefLabel "Credit Card" ;
+    skos:altLabel "Revolving Consumer Credit" ;
+    skos:definition "A revolving credit account used for purchases up to an approved credit limit, with interest accruing on unpaid balances." ;
+    :fiboAlignment "fibo-fbc-dae-crd:CreditCard" ;
+    :usageConstraint "Adverse action notices required for credit limit reductions." ;
+    :dataAssetMapping "CARD_ACCOUNT, STATEMENT" ;
+    :termOwner "Consumer Lending" ;
+    :status "Approved" .
+
+:InvestmentAccount
+    a owl:Class ;
+    rdfs:subClassOf :Account ;
+    rdfs:label "Investment Account" ;
+    skos:prefLabel "Investment Account" ;
+    skos:definition "An account holding financial instruments for growth or income purposes." ;
+    skos:scopeNote "Not FDIC-insured unless cash positions are swept to insured accounts. Subject to SEC and FINRA regulation." ;
+    :fiboAlignment "fibo-sec-sec-acct:InvestmentAccount" ;
+    :usageConstraint "Not FDIC insured — disclosure required at account opening." ;
+    :dataAssetMapping "INVESTMENT_ACCOUNT, PORTFOLIO" ;
+    :termOwner "Wealth Management" ;
+    :status "Approved" .
+
+:TrustAccount
+    a owl:Class ;
+    rdfs:subClassOf :InvestmentAccount ;
+    rdfs:label "Trust Account" ;
+    skos:prefLabel "Trust Account" ;
+    skos:altLabel "Fiduciary Account" ;
+    skos:definition "An account managed by the bank as trustee for the benefit of designated beneficiaries under a governing trust instrument." ;
+    :fiboAlignment "fibo-be-tr-tr:TrustAccount" ;
+    :usageConstraint "Fiduciary duty — investment decisions must align with trust document and beneficiary interests." ;
+    :dataAssetMapping "TRUST_ACCOUNT, BENEFICIARY" ;
+    :termOwner "Trust & Estate" ;
+    :status "Approved" .
+
+
+# ════════════════════════════════════════════════════════════
+# DOMAIN: TRANSACTIONS
+# ════════════════════════════════════════════════════════════
+
+:Transaction
+    a owl:Class ;
+    rdfs:label "Transaction" ;
+    skos:prefLabel "Transaction" ;
+    skos:definition "A recorded event representing the movement, conversion, or exchange of financial value between parties or accounts." ;
+    :fiboAlignment "fibo-fbc-pas-caa:Transaction" ;
+    :aiCanonicalDefinition "A discrete financial event with a unique identifier, timestamp, amount, and directional relationship between a source and destination account or party." ;
+    :dataAssetMapping "TRANSACTION, LEDGER_ENTRY" ;
+    :termOwner "Enterprise Data Office" ;
+    :status "Approved" .
+
+:Payment
+    a owl:Class ;
+    rdfs:subClassOf :Transaction ;
+    rdfs:label "Payment" ;
+    skos:prefLabel "Payment" ;
+    skos:altLabel "Fund Transfer" ;
+    skos:definition "A transaction involving the transfer of funds from one party or account to another." ;
+    :fiboAlignment "fibo-fbc-pas-caa:Payment" ;
+    :dataAssetMapping "PAYMENT, TRANSFER" ;
+    :termOwner "Payments Operations" ;
+    :status "Approved" .
+
+:ACHTransfer
+    a owl:Class ;
+    rdfs:subClassOf :Payment ;
+    rdfs:label "ACH Transfer" ;
+    skos:prefLabel "ACH Transfer" ;
+    skos:altLabel "Automated Clearing House Transfer" ;
+    skos:definition "An electronic funds transfer processed through the Automated Clearing House network in batch." ;
+    skos:scopeNote "Governed by NACHA Operating Rules. Typically settles same-day or next business day." ;
+    :dataAssetMapping "ACH_TRANSACTION, NACHA_BATCH" ;
+    :termOwner "Payments Operations" ;
+    :status "Approved" .
+
+:ACHCredit
+    a owl:Class ;
+    rdfs:subClassOf :ACHTransfer ;
+    rdfs:label "ACH Credit" ;
+    skos:prefLabel "ACH Credit" ;
+    skos:altLabel "ACH Deposit" ;
+    skos:definition "An ACH transaction that deposits funds into the receiver's account; the originator pushes funds to the receiver." ;
+    :aiCanonicalDefinition "An ACH transaction type in which the originating party initiates a credit to the receiving account, such as a payroll direct deposit." ;
+    :dataAssetMapping "ACH_TRANSACTION — TXN_TYPE = 'CREDIT'" ;
+    :termOwner "Payments Operations" ;
+    :status "Approved" .
+
+:ACHDebit
+    a owl:Class ;
+    rdfs:subClassOf :ACHTransfer ;
+    rdfs:label "ACH Debit" ;
+    skos:prefLabel "ACH Debit" ;
+    skos:altLabel "ACH Pull" ;
+    skos:definition "An ACH transaction that withdraws funds from the receiver's account; the originator pulls funds from the receiver." ;
+    :usageConstraint "Customer authorization must be obtained before initiating an ACH debit." ;
+    :dataAssetMapping "ACH_TRANSACTION — TXN_TYPE = 'DEBIT'" ;
+    :termOwner "Payments Operations" ;
+    :status "Approved" .
+
+:WireTransfer
+    a owl:Class ;
+    rdfs:subClassOf :Payment ;
+    rdfs:label "Wire Transfer" ;
+    skos:prefLabel "Wire Transfer" ;
+    skos:altLabel "Fedwire", "SWIFT Transfer" ;
+    skos:definition "A real-time, irrevocable electronic transfer of funds between financial institutions, settled through Fedwire or SWIFT." ;
+    :fiboAlignment "fibo-fbc-pas-caa:WireTransfer" ;
+    :usageConstraint "OFAC sanctions screening required before execution. Irrevocable once sent." ;
+    :dataAssetMapping "WIRE_TRANSFER, SWIFT_MESSAGE" ;
+    :termOwner "Payments Operations" ;
+    :status "Approved" .
+
+:DomesticWire
+    a owl:Class ;
+    rdfs:subClassOf :WireTransfer ;
+    rdfs:label "Domestic Wire" ;
+    skos:prefLabel "Domestic Wire" ;
+    skos:altLabel "Fedwire Transfer" ;
+    skos:definition "A wire transfer between financial institutions within the United States, settled through the Federal Reserve's Fedwire system." ;
+    :usageConstraint "Dual control required for high-value wires above internal threshold." ;
+    :dataAssetMapping "WIRE_TRANSFER — WIRE_TYPE = 'DOM'" ;
+    :termOwner "Payments Operations" ;
+    :status "Approved" .
+
+:InternationalWire
+    a owl:Class ;
+    rdfs:subClassOf :WireTransfer ;
+    rdfs:label "International Wire" ;
+    skos:prefLabel "International Wire" ;
+    skos:altLabel "Cross-Border Wire", "SWIFT Wire" ;
+    skos:definition "A cross-border wire transfer facilitated through the SWIFT messaging network." ;
+    :usageConstraint "OFAC and FATF screening mandatory. Correspondent bank due diligence required." ;
+    :dataAssetMapping "WIRE_TRANSFER — WIRE_TYPE = 'INTL'" ;
+    :termOwner "Payments Operations" ;
+    :status "Approved" .
+
+:RealTimePayment
+    a owl:Class ;
+    rdfs:subClassOf :Payment ;
+    rdfs:label "Real-Time Payment" ;
+    skos:prefLabel "Real-Time Payment" ;
+    skos:altLabel "Instant Payment", "RTP" ;
+    skos:definition "An immediately settled, irrevocable electronic payment processed through the RTP Network or FedNow, available 24/7/365." ;
+    :usageConstraint "Irrevocable — fraud controls and limits must be applied pre-authorization." ;
+    :dataAssetMapping "RTP_TRANSACTION, FEDNOW" ;
+    :termOwner "Payments Operations" ;
+    :status "Approved" .
+
+:LoanOrigination
+    a owl:Class ;
+    rdfs:subClassOf :Transaction ;
+    rdfs:label "Loan Origination" ;
+    skos:prefLabel "Loan Origination" ;
+    skos:altLabel "New Loan", "Loan Application" ;
+    skos:definition "The end-to-end workflow from loan application through credit decisioning, documentation, closing, and initial funding." ;
+    :usageConstraint "HMDA data collection required for mortgage originations." ;
+    :dataAssetMapping "LOS, ORIGINATION_PIPELINE" ;
+    :termOwner "Originations" ;
+    :status "Approved" .
+
+:ChargeOff
+    a owl:Class ;
+    rdfs:subClassOf :Transaction ;
+    rdfs:label "Charge-Off" ;
+    skos:prefLabel "Charge-Off" ;
+    skos:altLabel "Write-Off" ;
+    skos:definition "The formal accounting removal of a loan balance deemed uncollectible, recorded as a loss against the allowance for credit losses." ;
+    skos:scopeNote "Typically occurs at 120–180 days delinquent. Charged-off loans may still be pursued for collection." ;
+    :usageConstraint "Regulatory reporting impact — Call Report Schedule RI-B." ;
+    :dataAssetMapping "CHARGE_OFF, LOSS_HISTORY" ;
+    :termOwner "Credit Risk" ;
+    :status "Approved" .
+
+:Fee
+    a owl:Class ;
+    rdfs:subClassOf :Transaction ;
+    rdfs:label "Fee" ;
+    skos:prefLabel "Fee" ;
+    skos:altLabel "Service Charge", "Bank Fee" ;
+    skos:definition "A charge assessed to a customer account for a specific service, account condition, or triggered event." ;
+    :fiboAlignment "fibo-fbc-pas-caa:Fee" ;
+    :usageConstraint "Consumer fee disclosures required under Truth in Savings Act." ;
+    :dataAssetMapping "FEE_TRANSACTION, FEE_WAIVER" ;
+    :termOwner "Operations" ;
+    :status "Approved" .
+
+:OverdraftFee
+    a owl:Class ;
+    rdfs:subClassOf :Fee ;
+    rdfs:label "Overdraft Fee" ;
+    skos:prefLabel "Overdraft Fee" ;
+    skos:altLabel "OD Fee" ;
+    skos:definition "A fee assessed when the bank honors a transaction that exceeds the customer's available balance, creating a negative balance." ;
+    :usageConstraint "Regulation E opt-in required for debit card and ATM overdraft coverage." ;
+    :dataAssetMapping "FEE_TRANSACTION — FEE_TYPE = 'OD'" ;
+    :termOwner "Retail Banking" ;
+    :status "Approved" .
+
+:NSFFee
+    a owl:Class ;
+    rdfs:subClassOf :Fee ;
+    rdfs:label "NSF Fee" ;
+    skos:prefLabel "NSF Fee" ;
+    skos:altLabel "Non-Sufficient Funds Fee", "Returned Item Fee" ;
+    skos:definition "A fee assessed when the bank declines to honor a transaction due to insufficient funds, returning the item unpaid." ;
+    skos:scopeNote "Distinct from overdraft fee — NSF means the item was returned unpaid, not honored." ;
+    :usageConstraint "CFPB scrutiny on NSF practices — monitor for regulatory changes." ;
+    :dataAssetMapping "FEE_TRANSACTION — FEE_TYPE = 'NSF'" ;
+    :termOwner "Retail Banking" ;
+    :status "Approved" .
+
+
+# ════════════════════════════════════════════════════════════
+# DOMAIN: CREDIT & RISK
+# ════════════════════════════════════════════════════════════
+
+:RiskConcept
+    a owl:Class ;
+    rdfs:label "Risk Concept" ;
+    skos:prefLabel "Risk Concept" ;
+    skos:definition "A category of financial risk exposure faced by the bank." ;
+    :termOwner "Chief Risk Officer" ;
+    :status "Approved" .
+
+:CreditRisk
+    a owl:Class ;
+    rdfs:subClassOf :RiskConcept ;
+    rdfs:label "Credit Risk" ;
+    skos:prefLabel "Credit Risk" ;
+    skos:altLabel "Default Risk" ;
+    skos:definition "The risk of financial loss arising from a borrower's or counterparty's failure to meet contractual payment obligations." ;
+    :fiboAlignment "fibo-fbc-dae-dbt:CreditRisk" ;
+    :aiCanonicalDefinition "The probability-weighted potential loss from a counterparty's failure to fulfill a financial obligation, measured through PD, LGD, and EAD." ;
+    :dataAssetMapping "CREDIT_EXPOSURE, DEFAULT_HISTORY" ;
+    :termOwner "Chief Credit Officer" ;
+    :status "Approved" .
+
+:ProbabilityOfDefault
+    a owl:Class ;
+    rdfs:subClassOf :CreditRisk ;
+    rdfs:label "Probability of Default" ;
+    skos:prefLabel "Probability of Default" ;
+    skos:altLabel "PD" ;
+    skos:definition "A forward-looking estimate of the likelihood that a borrower will fail to meet payment obligations within a defined period, typically one year." ;
+    :fiboAlignment "fibo-fbc-dae-dbt:ProbabilityOfDefault" ;
+    :usageConstraint "Model validation required — SR 11-7 guidance applies." ;
+    :dataAssetMapping "CREDIT_MODEL, PD_SCORE" ;
+    :termOwner "Credit Risk" ;
+    :status "Approved" .
+
+:LossGivenDefault
+    a owl:Class ;
+    rdfs:subClassOf :CreditRisk ;
+    rdfs:label "Loss Given Default" ;
+    skos:prefLabel "Loss Given Default" ;
+    skos:altLabel "LGD" ;
+    skos:definition "The fraction of a credit exposure estimated to be irrecoverable in the event of default, after accounting for collateral and recovery." ;
+    :fiboAlignment "fibo-fbc-dae-dbt:LossGivenDefault" ;
+    :usageConstraint "Model validation required — assumptions must be documented." ;
+    :dataAssetMapping "LOSS_MODEL, RECOVERY_HISTORY" ;
+    :termOwner "Credit Risk" ;
+    :status "Approved" .
+
+:ExpectedCreditLoss
+    a owl:Class ;
+    rdfs:subClassOf :CreditRisk ;
+    rdfs:label "Expected Credit Loss" ;
+    skos:prefLabel "Expected Credit Loss" ;
+    skos:altLabel "ECL" ;
+    skos:definition "A probabilistic estimate of credit losses over the life of a financial instrument, calculated as PD x LGD x EAD, incorporating forward-looking economic conditions." ;
+    skos:scopeNote "Required under FASB ASC 326 (CECL). Replaced the incurred loss model in 2020." ;
+    :usageConstraint "CECL methodology — auditor and regulatory scrutiny applies." ;
+    skos:historyNote "Replaced Incurred Loss Model upon adoption of FASB ASC 326 (CECL)." ;
+    :dataAssetMapping "ECL_MODEL, ALLOWANCE" ;
+    :termOwner "Finance / Credit Risk" ;
+    :status "Approved" .
+
+:Collateral
+    a owl:Class ;
+    rdfs:label "Collateral" ;
+    skos:prefLabel "Collateral" ;
+    skos:altLabel "Security", "Pledge" ;
+    skos:definition "A tangible or financial asset pledged by a borrower to the bank as security for a loan, giving the bank a legal claim upon default." ;
+    :fiboAlignment "fibo-fbc-dae-dbt:Collateral" ;
+    :usageConstraint "Lien perfection and UCC filing required — legal review necessary." ;
+    :dataAssetMapping "COLLATERAL, LIEN_REGISTRY" ;
+    :termOwner "Credit Risk" ;
+    :status "Approved" .
+
+:LoanToValueRatio
+    a owl:Class ;
+    rdfs:label "Loan-to-Value Ratio" ;
+    skos:prefLabel "Loan-to-Value Ratio" ;
+    skos:altLabel "LTV" ;
+    skos:definition "The ratio expressing a loan's outstanding balance relative to the current appraised or market value of the pledged collateral." ;
+    :fiboAlignment "fibo-loan-re-re:LoanToValueRatio" ;
+    :dataAssetMapping "LOAN_COLLATERAL, APPRAISAL" ;
+    :termOwner "Mortgage Banking" ;
+    :status "Approved" .
+
+:NonPerformingLoan
+    a owl:Class ;
+    rdfs:subClassOf :LoanAccount ;
+    rdfs:label "Non-Performing Loan" ;
+    skos:prefLabel "Non-Performing Loan" ;
+    skos:altLabel "NPL" ;
+    skos:definition "A loan classified as non-performing when scheduled payments are 90 or more days past due, typically resulting in cessation of interest income accrual." ;
+    :fiboAlignment "fibo-loan-ln-ln:NonPerformingLoan" ;
+    :usageConstraint "Regulatory reporting — NPL ratios disclosed in Call Report." ;
+    :dataAssetMapping "NPL_REGISTER, ACCRUAL_STATUS" ;
+    :termOwner "Credit Risk" ;
+    :status "Approved" .
+
+:MarketRisk
+    a owl:Class ;
+    rdfs:subClassOf :RiskConcept ;
+    rdfs:label "Market Risk" ;
+    skos:prefLabel "Market Risk" ;
+    skos:altLabel "Price Risk" ;
+    skos:definition "The risk of financial loss resulting from adverse movements in market prices, interest rates, foreign exchange rates, or commodity prices." ;
+    :fiboAlignment "fibo-fbc-dae-dbt:MarketRisk" ;
+    :dataAssetMapping "MARKET_RISK, MTM_VALUATION" ;
+    :termOwner "Market Risk Management" ;
+    :status "Approved" .
+
+:InterestRateRisk
+    a owl:Class ;
+    rdfs:subClassOf :MarketRisk ;
+    rdfs:label "Interest Rate Risk" ;
+    skos:prefLabel "Interest Rate Risk" ;
+    skos:altLabel "IRR" ;
+    skos:definition "The exposure of the bank's net interest income and economic value of equity to changes in market interest rates." ;
+    :fiboAlignment "fibo-fbc-dae-dbt:InterestRateRisk" ;
+    :usageConstraint "ALCO oversight required — scenario analysis mandatory." ;
+    :dataAssetMapping "IRR_MODEL, NII_SIMULATION" ;
+    :termOwner "ALM / Treasury" ;
+    :status "Approved" .
+
+:ValueAtRisk
+    a owl:Class ;
+    rdfs:subClassOf :MarketRisk ;
+    rdfs:label "Value at Risk" ;
+    skos:prefLabel "Value at Risk" ;
+    skos:altLabel "VaR" ;
+    skos:definition "A probabilistic estimate of the maximum loss a portfolio is expected to incur over a defined horizon at a specified confidence interval under normal market conditions." ;
+    :fiboAlignment "fibo-fbc-dae-dbt:ValueAtRisk" ;
+    :usageConstraint "Model validation required — VaR limitations must be disclosed." ;
+    :dataAssetMapping "VAR_MODEL, TRADING_BOOK" ;
+    :termOwner "Market Risk Management" ;
+    :status "Approved" .
+
+:OperationalRisk
+    a owl:Class ;
+    rdfs:subClassOf :RiskConcept ;
+    rdfs:label "Operational Risk" ;
+    skos:prefLabel "Operational Risk" ;
+    skos:definition "The risk of financial loss or reputational harm arising from failures in internal processes, human error, system failures, or external events." ;
+    :fiboAlignment "fibo-fbc-dae-dbt:OperationalRisk" ;
+    :usageConstraint "Loss data collection mandatory for regulatory capital calculation." ;
+    :dataAssetMapping "OPS_RISK_EVENT, LOSS_DATA" ;
+    :termOwner "Operational Risk Management" ;
+    :status "Approved" .
+
+:FraudRisk
+    a owl:Class ;
+    rdfs:subClassOf :OperationalRisk ;
+    rdfs:label "Fraud Risk" ;
+    skos:prefLabel "Fraud Risk" ;
+    skos:definition "The risk of loss arising from intentional deception or misrepresentation by internal employees, customers, or external parties for financial gain." ;
+    :usageConstraint "SAR filing may be required upon fraud detection." ;
+    :dataAssetMapping "FRAUD_ALERT, CASE_MANAGEMENT" ;
+    :termOwner "Financial Crimes" ;
+    :status "Approved" .
+
+:AccountTakeover
+    a owl:Class ;
+    rdfs:subClassOf :FraudRisk ;
+    rdfs:label "Account Takeover" ;
+    skos:prefLabel "Account Takeover" ;
+    skos:altLabel "ATO" ;
+    skos:definition "A fraud scheme in which an unauthorized party gains control of a customer's account through compromised credentials or social engineering." ;
+    :usageConstraint "Regulation E dispute rights apply for unauthorized EFTs — respond within 10 business days." ;
+    :dataAssetMapping "FRAUD_ALERT — FRAUD_TYPE = 'ATO'" ;
+    :termOwner "Financial Crimes" ;
+    :status "Approved" .
+
+:IdentityTheft
+    a owl:Class ;
+    rdfs:subClassOf :FraudRisk ;
+    rdfs:label "Identity Theft" ;
+    skos:prefLabel "Identity Theft" ;
+    skos:altLabel "ID Fraud" ;
+    skos:definition "A fraud scheme in which a bad actor uses stolen personal identifying information to assume another person's identity for financial benefit." ;
+    :usageConstraint "Red Flags Rule requires identity theft prevention program." ;
+    :dataAssetMapping "CIP_VERIFICATION, FRAUD_CASE" ;
+    :termOwner "Financial Crimes" ;
+    :status "Approved" .
+
+:ModelRisk
+    a owl:Class ;
+    rdfs:subClassOf :RiskConcept ;
+    rdfs:label "Model Risk" ;
+    skos:prefLabel "Model Risk" ;
+    skos:definition "The risk of financial loss, reputational harm, or regulatory penalty arising from the use of models that contain errors, rely on flawed assumptions, or are applied outside their intended scope." ;
+    :usageConstraint "All models require independent validation before production use — SR 11-7." ;
+    :dataAssetMapping "MODEL_INVENTORY, VALIDATION_REPORT" ;
+    :termOwner "Model Risk Management" ;
+    :status "Approved" .
+
+
+# ════════════════════════════════════════════════════════════
+# DOMAIN: REGULATORY & COMPLIANCE
+# ════════════════════════════════════════════════════════════
+
+:RegulatoryFramework
+    a owl:Class ;
+    rdfs:label "Regulatory Framework" ;
+    skos:prefLabel "Regulatory Framework" ;
+    skos:definition "A law, regulation, or supervisory standard governing the conduct and operations of the bank." ;
+    :termOwner "Chief Compliance Officer" ;
+    :status "Approved" .
+
+:AntiMoneyLaundering
+    a owl:Class ;
+    rdfs:subClassOf :RegulatoryFramework ;
+    rdfs:label "Anti-Money Laundering" ;
+    skos:prefLabel "Anti-Money Laundering" ;
+    skos:altLabel "AML Program" ;
+    skos:definition "A regulatory compliance program encompassing policies, procedures, systems, and controls designed to identify and report transactions potentially involving proceeds of criminal activity." ;
+    :usageConstraint "SAR data is highly confidential — tipping off prohibition applies." ;
+    :dataAssetMapping "AML_ALERT, SAR_FILING" ;
+    :termOwner "BSA / AML Compliance" ;
+    :status "Approved" .
+
+:SuspiciousActivityReport
+    a owl:Class ;
+    rdfs:label "Suspicious Activity Report" ;
+    skos:prefLabel "Suspicious Activity Report" ;
+    skos:altLabel "SAR" ;
+    skos:definition "A confidential regulatory report submitted to FinCEN within 30 days of detecting a transaction involving $5,000 or more suspected to involve funds from illegal activity." ;
+    :usageConstraint "Tipping off prohibition — do not disclose SAR existence to the subject of the report." ;
+    :dataAssetMapping "SAR_FILING, CASE_MANAGEMENT" ;
+    :termOwner "BSA / AML Compliance" ;
+    :status "Approved" .
+
+:CurrencyTransactionReport
+    a owl:Class ;
+    rdfs:label "Currency Transaction Report" ;
+    skos:prefLabel "Currency Transaction Report" ;
+    skos:altLabel "CTR" ;
+    skos:definition "A regulatory report filed with FinCEN for cash transactions exceeding $10,000, subject to aggregation rules for multiple same-day transactions." ;
+    :usageConstraint "Structuring to avoid CTR filing is a federal crime — monitor for patterns." ;
+    :dataAssetMapping "CTR_FILING, CASH_TRANSACTION" ;
+    :termOwner "BSA / AML Compliance" ;
+    :status "Approved" .
+
+:KnowYourCustomer
+    a owl:Class ;
+    rdfs:subClassOf :RegulatoryFramework ;
+    rdfs:label "Know Your Customer" ;
+    skos:prefLabel "Know Your Customer" ;
+    skos:altLabel "KYC" ;
+    skos:definition "A regulatory compliance program requiring banks to verify customer identities, understand the nature of customer relationships, and assess and monitor customer risk on an ongoing basis." ;
+    :usageConstraint "PII — identity documents subject to GLBA data protection." ;
+    :dataAssetMapping "KYC_PROFILE, CDD_REVIEW" ;
+    :termOwner "BSA / AML Compliance" ;
+    :status "Approved" .
+
+:CustomerDueDiligence
+    a owl:Class ;
+    rdfs:subClassOf :KnowYourCustomer ;
+    rdfs:label "Customer Due Diligence" ;
+    skos:prefLabel "Customer Due Diligence" ;
+    skos:altLabel "CDD" ;
+    skos:definition "A risk-based process for collecting, verifying, and documenting customer information to understand the purpose and nature of the customer relationship and support ongoing monitoring." ;
+    :usageConstraint "Beneficial ownership collection mandatory for legal entity customers." ;
+    :dataAssetMapping "CDD_PROFILE, RISK_RATING" ;
+    :termOwner "BSA / AML Compliance" ;
+    :status "Approved" .
+
+:EnhancedDueDiligence
+    a owl:Class ;
+    rdfs:subClassOf :CustomerDueDiligence ;
+    rdfs:label "Enhanced Due Diligence" ;
+    skos:prefLabel "Enhanced Due Diligence" ;
+    skos:altLabel "EDD" ;
+    skos:definition "A heightened level of customer due diligence applied to higher-risk relationships, requiring additional documentation, source of funds verification, and senior management sign-off." ;
+    :usageConstraint "Senior management approval required — rationale must be documented." ;
+    :dataAssetMapping "EDD_FILE, RISK_OVERRIDE" ;
+    :termOwner "BSA / AML Compliance" ;
+    :status "Approved" .
+
+:AllowanceForCreditLosses
+    a owl:Class ;
+    rdfs:label "Allowance for Credit Losses" ;
+    skos:prefLabel "Allowance for Credit Losses" ;
+    skos:altLabel "ACL", "Loan Loss Reserve" ;
+    skos:definition "A contra-asset reserve representing management's estimate of lifetime expected credit losses on the loan portfolio, established under the CECL accounting standard." ;
+    skos:historyNote "Formerly known as Allowance for Loan and Lease Losses (ALLL) prior to CECL adoption." ;
+    :usageConstraint "Auditor and regulator scrutiny — methodology must be well-documented." ;
+    :dataAssetMapping "ACL_CALC, ALLOWANCE_ROLL" ;
+    :termOwner "Finance / Credit Risk" ;
+    :status "Approved" .
+
+
+# ════════════════════════════════════════════════════════════
+# DOMAIN: DATA GOVERNANCE & AI
+# ════════════════════════════════════════════════════════════
+
+:DataGovernanceConcept
+    a owl:Class ;
+    rdfs:label "Data Governance Concept" ;
+    skos:prefLabel "Data Governance Concept" ;
+    skos:definition "A concept related to the management, governance, and quality of enterprise data assets." ;
+    :termOwner "Chief Data Office" ;
+    :status "Approved" .
+
+:BusinessGlossary
+    a owl:Class ;
+    rdfs:subClassOf :DataGovernanceConcept ;
+    rdfs:label "Business Glossary" ;
+    skos:prefLabel "Business Glossary" ;
+    skos:altLabel "Enterprise Glossary" ;
+    skos:definition "A governed repository of standardized business term definitions, ownership, and semantic relationships enabling consistent interpretation of enterprise data across teams and systems." ;
+    :aiCanonicalDefinition "A controlled vocabulary of business terms with formal definitions and ownership, used to ground LLM reasoning in organization-specific semantic context." ;
+    :usageConstraint "Semantic consistency — all LLM prompts referencing business data should use glossary-approved definitions." ;
+    :dataAssetMapping "GLOSSARY, TERM_RELATIONSHIP" ;
+    :termOwner "Data Governance" ;
+    :status "Approved" .
+
+:DataCatalog
+    a owl:Class ;
+    rdfs:subClassOf :DataGovernanceConcept ;
+    rdfs:label "Data Catalog" ;
+    skos:prefLabel "Data Catalog" ;
+    skos:altLabel "Metadata Catalog" ;
+    skos:definition "A centralized metadata management platform enabling data discovery, lineage tracking, business context enrichment, and governance oversight across enterprise data assets." ;
+    :aiCanonicalDefinition "A searchable inventory of enterprise data assets enriched with business metadata, lineage, and ownership information, enabling AI systems to locate and contextualize data." ;
+    :usageConstraint "Access controls — sensitive data assets require role-based access in catalog." ;
+    :dataAssetMapping "ALATION, COLLIBRA instances" ;
+    :termOwner "Data Governance" ;
+    :status "Approved" .
+
+:DataLineage
+    a owl:Class ;
+    rdfs:subClassOf :DataGovernanceConcept ;
+    rdfs:label "Data Lineage" ;
+    skos:prefLabel "Data Lineage" ;
+    skos:altLabel "Data Provenance" ;
+    skos:definition "A traceable record of data's origins, transformations, and movements across systems, enabling auditability of reported figures and diagnosis of data quality issues." ;
+    :usageConstraint "BCBS 239 requires documented lineage for risk data — regulatory priority." ;
+    :dataAssetMapping "LINEAGE_MAP, DATA_FLOW" ;
+    :termOwner "Data Governance" ;
+    :status "Approved" .
+
+:Metadata
+    a owl:Class ;
+    rdfs:subClassOf :DataGovernanceConcept ;
+    rdfs:label "Metadata" ;
+    skos:prefLabel "Metadata" ;
+    skos:definition "Structured information describing the properties, meaning, origin, and governance of data assets, enabling consistent interpretation and effective management across the enterprise." ;
+    :aiCanonicalDefinition "Descriptive attributes attached to a data asset that enable an AI system to understand its meaning, lineage, constraints, and appropriate use without inspecting the underlying data." ;
+    :usageConstraint "Metadata is foundational to AI readiness — LLMs depend on well-defined metadata for accurate reasoning." ;
+    :termOwner "Data Governance" ;
+    :status "Approved" .
+
+:LargeLanguageModel
+    a owl:Class ;
+    rdfs:label "Large Language Model" ;
+    skos:prefLabel "Large Language Model" ;
+    skos:altLabel "LLM" ;
+    skos:definition "A neural language model trained on large-scale text data, capable of natural language understanding, generation, and reasoning, used in banking for knowledge retrieval, document analysis, and process automation." ;
+    :aiCanonicalDefinition "A transformer-based deep learning model that generates contextually appropriate text by predicting token sequences, used in banking for tasks such as document summarization, policy Q&A, and data enrichment." ;
+    :usageConstraint "Output reliability must be validated — hallucination risk in regulated contexts." ;
+    :dataAssetMapping "LLM_DEPLOYMENT, PROMPT_LOG" ;
+    :termOwner "AI / Innovation" ;
+    :status "Approved" .
+
+:RetrievalAugmentedGeneration
+    a owl:Class ;
+    rdfs:label "Retrieval-Augmented Generation" ;
+    skos:prefLabel "Retrieval-Augmented Generation" ;
+    skos:altLabel "RAG" ;
+    skos:definition "An AI system architecture in which a language model's responses are grounded in information retrieved from a curated external knowledge base, improving factual accuracy and reducing unsupported generation." ;
+    :aiCanonicalDefinition "An AI pipeline pattern combining a retrieval system (vector search or knowledge graph) with a language model to produce responses grounded in verified enterprise knowledge rather than training data alone." ;
+    :usageConstraint "Knowledge base quality directly impacts output reliability — metadata governance is critical." ;
+    :dataAssetMapping "RAG_PIPELINE, VECTOR_STORE" ;
+    :termOwner "AI / Innovation" ;
+    :status "Approved" .
+
+:KnowledgeGraph
+    a owl:Class ;
+    rdfs:label "Knowledge Graph" ;
+    skos:prefLabel "Knowledge Graph" ;
+    skos:altLabel "KG" ;
+    skos:definition "A graph-structured data representation encoding entities, their attributes, and the semantic relationships between them, enabling complex reasoning and inference by AI systems." ;
+    :aiCanonicalDefinition "A network of real-world entities and their relationships, represented as nodes and edges, that provides AI systems with structured, queryable factual knowledge about a domain." ;
+    :usageConstraint "Ontology alignment with business glossary recommended for LLM grounding." ;
+    :dataAssetMapping "KNOWLEDGE_GRAPH, ENTITY_RELATIONSHIP" ;
+    :termOwner "AI / Innovation" ;
+    :status "Approved" .
+
+:GeneralLedger
+    a owl:Class ;
+    rdfs:label "General Ledger" ;
+    skos:prefLabel "General Ledger" ;
+    skos:altLabel "GL" ;
+    skos:definition "The comprehensive accounting record containing all debit and credit entries for every financial transaction, serving as the authoritative basis for financial reporting." ;
+    :fiboAlignment "fibo-fbc-pas-caa:GeneralLedger" ;
+    :usageConstraint "SOX controls apply — GL access and changes require audit trail." ;
+    :dataAssetMapping "GL_ENTRY, CHART_OF_ACCOUNTS" ;
+    :termOwner "Finance" ;
+    :status "Approved" .
+
+
+# ════════════════════════════════════════════════════════════
+# OBJECT PROPERTIES (Relationships)
+# ════════════════════════════════════════════════════════════
+
+:holdsAccount
+    a owl:ObjectProperty ;
+    rdfs:label "holds account" ;
+    rdfs:domain :Customer ;
+    rdfs:range :Account ;
+    skos:definition "Relates a customer to an account they own or are the primary holder of." ;
+    owl:inverseOf :isHeldBy .
+
+:isHeldBy
+    a owl:ObjectProperty ;
+    rdfs:label "is held by" ;
+    rdfs:domain :Account ;
+    rdfs:range :Customer ;
+    skos:definition "Relates an account to the customer who holds it." .
+
+:makesTransaction
+    a owl:ObjectProperty ;
+    rdfs:label "makes transaction" ;
+    rdfs:domain :Customer ;
+    rdfs:range :Transaction ;
+    skos:definition "Relates a customer to a transaction they initiate or are party to." .
+
+:isSecuredBy
+    a owl:ObjectProperty ;
+    rdfs:label "is secured by" ;
+    rdfs:domain :LoanAccount ;
+    rdfs:range :Collateral ;
+    skos:definition "Relates a loan to the collateral pledged to secure it." ;
+    owl:inverseOf :secures .
+
+:secures
+    a owl:ObjectProperty ;
+    rdfs:label "secures" ;
+    rdfs:domain :Collateral ;
+    rdfs:range :LoanAccount ;
+    skos:definition "Relates collateral to the loan it secures." .
+
+:hasGuarantor
+    a owl:ObjectProperty ;
+    rdfs:label "has guarantor" ;
+    rdfs:domain :LoanAccount ;
+    rdfs:range :Guarantor ;
+    skos:definition "Relates a loan to a guarantor who has agreed to repay the debt if the primary borrower defaults." .
+
+:hasBeneficialOwner
+    a owl:ObjectProperty ;
+    rdfs:label "has beneficial owner" ;
+    rdfs:domain :LegalEntity ;
+    rdfs:range :BeneficialOwner ;
+    skos:definition "Relates a legal entity customer to the natural persons who ultimately own or control it." .
+
+:hasCounterparty
+    a owl:ObjectProperty ;
+    rdfs:label "has counterparty" ;
+    rdfs:domain :Transaction ;
+    rdfs:range :Counterparty ;
+    skos:definition "Relates a transaction to the counterparty on the opposite side." .
+
+:subjectToRisk
+    a owl:ObjectProperty ;
+    rdfs:label "subject to risk" ;
+    rdfs:domain :LoanAccount ;
+    rdfs:range :RiskConcept ;
+    skos:definition "Relates a financial product to the categories of risk it is exposed to." .
+
+:governedBy
+    a owl:ObjectProperty ;
+    rdfs:label "governed by" ;
+    rdfs:domain :Account ;
+    rdfs:range :RegulatoryFramework ;
+    skos:definition "Relates a banking product or process to the regulatory framework that governs it." .
+
+:mitigatedBy
+    a owl:ObjectProperty ;
+    rdfs:label "mitigated by" ;
+    rdfs:domain :RiskConcept ;
+    rdfs:range :Collateral ;
+    skos:definition "Relates a credit risk to the collateral that reduces the potential loss." .
+
+:documentedIn
+    a owl:ObjectProperty ;
+    rdfs:label "documented in" ;
+    rdfs:domain :RegulatoryFramework ;
+    rdfs:range :BusinessGlossary ;
+    skos:definition "Relates a regulatory concept to the business glossary where it is formally defined." .
+
+:groundedBy
+    a owl:ObjectProperty ;
+    rdfs:label "grounded by" ;
+    rdfs:domain :LargeLanguageModel ;
+    rdfs:range :KnowledgeGraph ;
+    skos:definition "Relates a language model to the knowledge graph used to ground its responses in verified facts." .
+
+:populatedFrom
+    a owl:ObjectProperty ;
+    rdfs:label "populated from" ;
+    rdfs:domain :KnowledgeGraph ;
+    rdfs:range :BusinessGlossary ;
+    skos:definition "Relates a knowledge graph to the business glossary whose concepts and definitions it instantiates." .
+
+
+# ════════════════════════════════════════════════════════════
+# DATATYPE PROPERTIES
+# ════════════════════════════════════════════════════════════
+
+:accountNumber
+    a owl:DatatypeProperty ;
+    rdfs:label "account number" ;
+    rdfs:domain :Account ;
+    rdfs:range xsd:string ;
+    skos:definition "The unique identifier assigned to an account within the bank's systems." .
+
+:outstandingBalance
+    a owl:DatatypeProperty ;
+    rdfs:label "outstanding balance" ;
+    rdfs:domain :LoanAccount ;
+    rdfs:range xsd:decimal ;
+    skos:definition "The current unpaid principal balance of a loan account." .
+
+:interestRate
+    a owl:DatatypeProperty ;
+    rdfs:label "interest rate" ;
+    rdfs:domain :LoanAccount ;
+    rdfs:range xsd:decimal ;
+    skos:definition "The annual percentage rate charged on a loan account." .
+
+:creditLimit
+    a owl:DatatypeProperty ;
+    rdfs:label "credit limit" ;
+    rdfs:domain :CreditCard ;
+    rdfs:range xsd:decimal ;
+    skos:definition "The maximum amount of credit extended to a cardholder." .
+
+:maturityDate
+    a owl:DatatypeProperty ;
+    rdfs:label "maturity date" ;
+    rdfs:domain :LoanAccount ;
+    rdfs:range xsd:date ;
+    skos:definition "The date on which the full outstanding balance of a loan is due." .
+
+:transactionAmount
+    a owl:DatatypeProperty ;
+    rdfs:label "transaction amount" ;
+    rdfs:domain :Transaction ;
+    rdfs:range xsd:decimal ;
+    skos:definition "The monetary value of a transaction." .
+
+:transactionDate
+    a owl:DatatypeProperty ;
+    rdfs:label "transaction date" ;
+    rdfs:domain :Transaction ;
+    rdfs:range xsd:dateTime ;
+    skos:definition "The date and time at which a transaction was initiated or processed." .
+
+:loanToValueRatio
+    a owl:DatatypeProperty ;
+    rdfs:label "loan-to-value ratio" ;
+    rdfs:domain :Mortgage ;
+    rdfs:range xsd:decimal ;
+    skos:definition "The ratio of the loan amount to the appraised value of the collateral, expressed as a decimal." .
+
+:probabilityOfDefault
+    a owl:DatatypeProperty ;
+    rdfs:label "probability of default" ;
+    rdfs:domain :LoanAccount ;
+    rdfs:range xsd:decimal ;
+    skos:definition "The estimated probability that this loan will default within a one-year horizon, expressed as a decimal between 0 and 1." .
+
+:daysDelinquent
+    a owl:DatatypeProperty ;
+    rdfs:label "days delinquent" ;
+    rdfs:domain :LoanAccount ;
+    rdfs:range xsd:integer ;
+    skos:definition "The number of calendar days since the most recent missed scheduled payment." .
+
+
+# ════════════════════════════════════════════════════════════
+# OWL RESTRICTIONS (Logical Axioms)
+# ════════════════════════════════════════════════════════════
+
+# A NonPerformingLoan must have daysDelinquent >= 90
+:NonPerformingLoan
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty :daysDelinquent ;
+        owl:someValuesFrom xsd:integer
+    ] .
+
+# A Mortgage must be secured by Collateral
+:Mortgage
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty :isSecuredBy ;
+        owl:someValuesFrom :Collateral
+    ] .
+
+# An Account must be held by exactly one Customer
+:Account
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty :isHeldBy ;
+        owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+        owl:onClass :Customer
+    ] .
+
+# A LegalEntity (BusinessCustomer) may have one or more BeneficialOwners
+:LegalEntity
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty :hasBeneficialOwner ;
+        owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger ;
+        owl:onClass :BeneficialOwner
+    ] .
+
+# A RAG system must be grounded by at least one KnowledgeGraph
+:RetrievalAugmentedGeneration
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty :groundedBy ;
+        owl:someValuesFrom :KnowledgeGraph
+    ] .
+
+# A KnowledgeGraph is populated from a BusinessGlossary
+:KnowledgeGraph
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty :populatedFrom ;
+        owl:someValuesFrom :BusinessGlossary
+    ] .
+
+
+# ════════════════════════════════════════════════════════════
+# SKOS CONCEPT SCHEME
+# ════════════════════════════════════════════════════════════
+
+:BankingDomainConceptScheme
+    a skos:ConceptScheme ;
+    skos:prefLabel "Banking Domain Concept Scheme" ;
+    dcterms:title "KeyBank Financial Services Domain Taxonomy" ;
+    dcterms:description "A SKOS concept scheme organizing the core concepts of the commercial banking domain for use in enterprise knowledge management and AI enablement." ;
+    skos:hasTopConcept :Party, :Account, :Transaction, :RiskConcept, :RegulatoryFramework, :DataGovernanceConcept .
+
+:Party skos:topConceptOf :BankingDomainConceptScheme ; skos:inScheme :BankingDomainConceptScheme .
+:Account skos:topConceptOf :BankingDomainConceptScheme ; skos:inScheme :BankingDomainConceptScheme .
+:Transaction skos:topConceptOf :BankingDomainConceptScheme ; skos:inScheme :BankingDomainConceptScheme .
+:RiskConcept skos:topConceptOf :BankingDomainConceptScheme ; skos:inScheme :BankingDomainConceptScheme .
+:RegulatoryFramework skos:topConceptOf :BankingDomainConceptScheme ; skos:inScheme :BankingDomainConceptScheme .
+:DataGovernanceConcept skos:topConceptOf :BankingDomainConceptScheme ; skos:inScheme :BankingDomainConceptScheme .
+
+# All classes in scheme
+:Individual skos:inScheme :BankingDomainConceptScheme .
+:LegalEntity skos:inScheme :BankingDomainConceptScheme .
+:Customer skos:inScheme :BankingDomainConceptScheme .
+:IndividualCustomer skos:inScheme :BankingDomainConceptScheme .
+:RetailCustomer skos:inScheme :BankingDomainConceptScheme .
+:PrivateBankingClient skos:inScheme :BankingDomainConceptScheme .
+:BusinessCustomer skos:inScheme :BankingDomainConceptScheme .
+:SmallBusiness skos:inScheme :BankingDomainConceptScheme .
+:MiddleMarketCompany skos:inScheme :BankingDomainConceptScheme .
+:LargeCorporate skos:inScheme :BankingDomainConceptScheme .
+:GovernmentEntity skos:inScheme :BankingDomainConceptScheme .
+:Counterparty skos:inScheme :BankingDomainConceptScheme .
+:Guarantor skos:inScheme :BankingDomainConceptScheme .
+:BeneficialOwner skos:inScheme :BankingDomainConceptScheme .
+:PoliticallyExposedPerson skos:inScheme :BankingDomainConceptScheme .
+:DepositAccount skos:inScheme :BankingDomainConceptScheme .
+:DemandDepositAccount skos:inScheme :BankingDomainConceptScheme .
+:PersonalChecking skos:inScheme :BankingDomainConceptScheme .
+:BusinessChecking skos:inScheme :BankingDomainConceptScheme .
+:SavingsAccount skos:inScheme :BankingDomainConceptScheme .
+:MoneyMarketAccount skos:inScheme :BankingDomainConceptScheme .
+:TimeDeposit skos:inScheme :BankingDomainConceptScheme .
+:LoanAccount skos:inScheme :BankingDomainConceptScheme .
+:Mortgage skos:inScheme :BankingDomainConceptScheme .
+:FixedRateMortgage skos:inScheme :BankingDomainConceptScheme .
+:AdjustableRateMortgage skos:inScheme :BankingDomainConceptScheme .
+:HomeEquityLineOfCredit skos:inScheme :BankingDomainConceptScheme .
+:CommercialLoan skos:inScheme :BankingDomainConceptScheme .
+:RevolvingCreditFacility skos:inScheme :BankingDomainConceptScheme .
+:TermLoan skos:inScheme :BankingDomainConceptScheme .
+:CommercialRealEstateLoan skos:inScheme :BankingDomainConceptScheme .
+:CreditCard skos:inScheme :BankingDomainConceptScheme .
+:InvestmentAccount skos:inScheme :BankingDomainConceptScheme .
+:TrustAccount skos:inScheme :BankingDomainConceptScheme .
+:Payment skos:inScheme :BankingDomainConceptScheme .
+:ACHTransfer skos:inScheme :BankingDomainConceptScheme .
+:ACHCredit skos:inScheme :BankingDomainConceptScheme .
+:ACHDebit skos:inScheme :BankingDomainConceptScheme .
+:WireTransfer skos:inScheme :BankingDomainConceptScheme .
+:DomesticWire skos:inScheme :BankingDomainConceptScheme .
+:InternationalWire skos:inScheme :BankingDomainConceptScheme .
+:RealTimePayment skos:inScheme :BankingDomainConceptScheme .
+:LoanOrigination skos:inScheme :BankingDomainConceptScheme .
+:ChargeOff skos:inScheme :BankingDomainConceptScheme .
+:Fee skos:inScheme :BankingDomainConceptScheme .
+:OverdraftFee skos:inScheme :BankingDomainConceptScheme .
+:NSFFee skos:inScheme :BankingDomainConceptScheme .
+:CreditRisk skos:inScheme :BankingDomainConceptScheme .
+:ProbabilityOfDefault skos:inScheme :BankingDomainConceptScheme .
+:LossGivenDefault skos:inScheme :BankingDomainConceptScheme .
+:ExpectedCreditLoss skos:inScheme :BankingDomainConceptScheme .
+:Collateral skos:inScheme :BankingDomainConceptScheme .
+:LoanToValueRatio skos:inScheme :BankingDomainConceptScheme .
+:NonPerformingLoan skos:inScheme :BankingDomainConceptScheme .
+:MarketRisk skos:inScheme :BankingDomainConceptScheme .
+:InterestRateRisk skos:inScheme :BankingDomainConceptScheme .
+:ValueAtRisk skos:inScheme :BankingDomainConceptScheme .
+:OperationalRisk skos:inScheme :BankingDomainConceptScheme .
+:FraudRisk skos:inScheme :BankingDomainConceptScheme .
+:AccountTakeover skos:inScheme :BankingDomainConceptScheme .
+:IdentityTheft skos:inScheme :BankingDomainConceptScheme .
+:ModelRisk skos:inScheme :BankingDomainConceptScheme .
+:AntiMoneyLaundering skos:inScheme :BankingDomainConceptScheme .
+:SuspiciousActivityReport skos:inScheme :BankingDomainConceptScheme .
+:CurrencyTransactionReport skos:inScheme :BankingDomainConceptScheme .
+:KnowYourCustomer skos:inScheme :BankingDomainConceptScheme .
+:CustomerDueDiligence skos:inScheme :BankingDomainConceptScheme .
+:EnhancedDueDiligence skos:inScheme :BankingDomainConceptScheme .
+:AllowanceForCreditLosses skos:inScheme :BankingDomainConceptScheme .
+:BusinessGlossary skos:inScheme :BankingDomainConceptScheme .
+:DataCatalog skos:inScheme :BankingDomainConceptScheme .
+:DataLineage skos:inScheme :BankingDomainConceptScheme .
+:Metadata skos:inScheme :BankingDomainConceptScheme .
+:LargeLanguageModel skos:inScheme :BankingDomainConceptScheme .
+:RetrievalAugmentedGeneration skos:inScheme :BankingDomainConceptScheme .
+:KnowledgeGraph skos:inScheme :BankingDomainConceptScheme .
+:GeneralLedger skos:inScheme :BankingDomainConceptScheme .
+
+
+# ════════════════════════════════════════════════════════════
+# OWL 2 RL REASONING EXTENSIONS (Aligned to graphdb-mcp-server.js)
+# ════════════════════════════════════════════════════════════
+
+# ── New Classes & Controlled Status Individuals ──
+
+:SecuredBorrower
+    a owl:Class ;
+    rdfs:subClassOf :Customer ;
+    rdfs:label "Secured Borrower" ;
+    skos:prefLabel "Secured Borrower" ;
+    skos:definition "A customer who holds at least one account secured by pledged collateral." ;
+    :termOwner "Credit Risk" ;
+    :status "Approved" ;
+    skos:inScheme :BankingDomainConceptScheme .
+
+:PerformanceStatus
+    a owl:Class ;
+    rdfs:label "Performance Status" ;
+    skos:prefLabel "Performance Status" ;
+    skos:definition "Discrete delinquency status bucket assigned to a loan account upstream of OWL reasoning." ;
+    :termOwner "Credit Risk" ;
+    :status "Approved" ;
+    skos:inScheme :BankingDomainConceptScheme .
+
+:Current
+    a :PerformanceStatus ;
+    rdfs:label "Current" .
+
+:Delinquent30To89
+    a :PerformanceStatus ;
+    rdfs:label "Delinquent 30-89 Days" .
+
+:Delinquent90Plus
+    a :PerformanceStatus ;
+    rdfs:label "Delinquent 90+ Days" .
+
+
+# ── New Object Properties ──
+
+# CQ1: Derived property — never asserted directly in ABox
+:isSubjectTo
+    a owl:ObjectProperty ;
+    rdfs:label "is subject to" ;
+    rdfs:domain :Customer ;
+    rdfs:range :RegulatoryFramework ;
+    skos:definition "Relates a customer to a regulatory framework that governs one or more of their held accounts." ;
+    owl:propertyChainAxiom ( :holdsAccount :governedBy ) .
+
+# CQ4: Links a loan to its discrete performance status bucket
+:hasPerformanceStatus
+    a owl:ObjectProperty ;
+    rdfs:label "has performance status" ;
+    rdfs:domain :LoanAccount ;
+    rdfs:range :PerformanceStatus ;
+    skos:definition "Relates a loan account to its current delinquency/performance status category." .
+
+
+# ── OWL 2 RL General Class Axioms ──
+
+# CQ2: Customer ⊓ ∃holdsAccount.(∃isSecuredBy.Collateral) ⊑ SecuredBorrower
+[ a owl:Class ;
+  owl:intersectionOf (
+    :Customer
+    [ a owl:Restriction ;
+      owl:onProperty :holdsAccount ;
+      owl:someValuesFrom [
+        a owl:Restriction ;
+        owl:onProperty :isSecuredBy ;
+        owl:someValuesFrom :Collateral
+      ]
+    ]
+  )
+] rdfs:subClassOf :SecuredBorrower .
+
+# CQ4: LoanAccount ⊓ ∃hasPerformanceStatus.{Delinquent90Plus} ⊑ NonPerformingLoan
+[ a owl:Class ;
+  owl:intersectionOf (
+    :LoanAccount
+    [ a owl:Restriction ;
+      owl:onProperty :hasPerformanceStatus ;
+      owl:hasValue :Delinquent90Plus
+    ]
+  )
+] rdfs:subClassOf :NonPerformingLoan .
+
